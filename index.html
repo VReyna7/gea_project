@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aventuras Ecológicas - Libro Animado para Niños</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+    }
+    
+    body {
+      background-color: #e0f7fa;
+      overflow: hidden;
+      height: 100vh;
+    }
+    
+    .book-container {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1500px;
+    }
+    
+    .book {
+      width: 90%;
+      max-width: 800px;
+      height: 80vh;
+      position: relative;
+      transform-style: preserve-3d;
+      transform: rotateX(10deg);
+    }
+    
+    .page {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transform-origin: left center;
+      transform-style: preserve-3d;
+      transition: transform 1s, z-index 0.5s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+      background-image: linear-gradient(to bottom right, #ffffff, #f5f5f5);
+    }
+    
+    .page-content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .page.active {
+      z-index: 1;
+    }
+    
+    .page.flipped {
+      transform: rotateY(-180deg);
+    }
+    
+    .page-title {
+      font-size: 2rem;
+      color: #4CAF50;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 2px rgba(0,0,0,0.1);
+    }
+    
+    .page-text {
+      font-size: 1.2rem;
+      color: #333;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    
+    .navigation {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 40px;
+    }
+    
+    .nav-button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.3s, background-color 0.3s;
+    }
+    
+    .nav-button:hover {
+      transform: scale(1.1);
+      background-color: #3e8e41;
+    }
+    
+    .nav-button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    
+    /* Contenedor para el juego de reciclaje */
+    .recycling-game {
+      width: 100%;
+      height: 70%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .items-container {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    
+    .item {
+      width: 80px;
+      height: 80px;
+      cursor: grab;
+      border-radius: 8px;
+      transition: transform 0.2s;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .item img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    
+    .item:hover {
+      transform: scale(1.1);
+    }
+    
+    .bins-container {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+    }
+    
+    .bin {
+      width: 120px;
+      height: 150px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      position: relative;
+    }
+    
+    .bin-label {
+      font-size: 1rem;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    
+    .bin img {
+      width: 100%;
+      height: 85%;
+      object-fit: contain;
+    }
+    
+    .feedback {
+      position: absolute;
+      top: -70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+    }
+    
+    .feedback.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-10px);
+    }
+    
+    .positive {
+      color: #4CAF50;
+    }
+    
+    .negative {
+      color: #F44336;
+    }
+    
+    .medal {
+      width: 150px;
+      height: 150px;
+      margin: 20px;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: opacity 1s, transform 1s;
+    }
+    
+    .medal.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+    
+    .character {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 150px;
+      height: 150px;
+      background-image: url('/api/placeholder/150/150');
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+    
+    @media (max-width: 768px) {
+      .page-title {
+        font-size: 1.5rem;
+      }
+      
+      .page-text {
+        font-size: 1rem;
+      }
+      
+      .item {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .bin {
+        width: 80px;
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="book-container">
+    <div class="book">
+      <!-- Portada -->
+      <div class="page active" id="page-1">
+        <div class="page-content">
+          <h1 class="page-title">Aventuras Ecológicas</h1>
+          <img src="/api/placeholder/300/200" alt="Niños cuidando el planeta" style="border-radius: 15px; margin: 20px 0;">
+          <p class="page-text">¡Bienvenido a un viaje para salvar nuestro planeta!</p>
+          <div class="character"></div>
+        </div>
+      </div>
+      
+      <!-- Página de historia -->
+      <div class="page" id="page-2">
+        <div class="page-content">
+          <h2 class="page-title">El Bosque Encantado</h2>
+          <img src="/api/placeholder/300/200" alt="Bosque mágico" style="border-radius: 15px; margin: 20px 0;">
+          <p class="page-text">Ana y Tomás descubrieron un bosque mágico cerca de su casa. Pero había un problema... ¡estaba lleno de basura!</p>
+          <p class="page-text">"Tenemos que ayudar a limpiar este lugar", dijo Ana. "¡Vamos a reciclar todo esto!"</p>
+        </div>
+      </div>
+      
+      <!-- Página del juego de reciclaje -->
+      <div class="page" id="page-3">
+        <div class="page-content">
+          <h2 class="page-title">¡Aprende a Reciclar!</h2>
+          <p class="page-text">Ayuda a Ana y Tomás a poner cada residuo en su lugar correcto</p>
+          
+          <div class="recycling-game">
+            <div class="items-container">
+              <div class="item" draggable="true" data-type="organico">
+                <img src="/api/placeholder/80/80" alt="Manzana mordida">
+              </div>
+              <div class="item" draggable="true" data-type="papel">
+                <img src="/api/placeholder/80/80" alt="Periódico">
+              </div>
+              <div class="item" draggable="true" data-type="plastico">
+                <img src="/api/placeholder/80/80" alt="Botella plástica">
+              </div>
+              <div class="item" draggable="true" data-type="vidrio">
+                <img src="/api/placeholder/80/80" alt="Botella de vidrio">
+              </div>
+            </div>
+            
+            <div class="bins-container">
+              <div class="bin" data-bintype="organico">
+                <div class="feedback">¡Muy bien! 🌱</div>
+                <img src="/api/placeholder/120/120" alt="Contenedor orgánico">
+                <span class="bin-label">Orgánico</span>
+              </div>
+              <div class="bin" data-bintype="papel">
+                <div class="feedback">¡Correcto! 📄</div>
+                <img src="/api/placeholder/120/120" alt="Contenedor papel">
+                <span class="bin-label">Papel</span>
+              </div>
+              <div class="bin" data-bintype="plastico">
+                <div class="feedback">¡Genial! ♻️</div>
+                <img src="/api/placeholder/120/120" alt="Contenedor plástico">
+                <span class="bin-label">Plástico</span>
+              </div>
+              <div class="bin" data-bintype="vidrio">
+                <div class="feedback">¡Perfecto! 🔍</div>
+                <img src="/api/placeholder/120/120" alt="Contenedor vidrio">
+                <span class="bin-label">Vidrio</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Página de medalla/certificado -->
+      <div class="page" id="page-4">
+        <div class="page-content">
+          <h2 class="page-title">¡Felicidades!</h2>
+          <div class="medal" id="medal">
+            <img src="/api/placeholder/150/150" alt="Medalla de Guardián del Planeta">
+          </div>
+          <p class="page-text">¡Eres oficialmente un Guardián del Planeta!</p>
+          <p class="page-text">Has aprendido a reciclar correctamente y ayudaste a mantener limpio el bosque encantado.</p>
+          <p class="page-text">¡Comparte lo que aprendiste con tus amigos y familia!</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="navigation">
+      <button class="nav-button" id="prev-btn" disabled>&lt;</button>
+      <button class="nav-button" id="next-btn">&gt;</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Variables para el libro
+      const pages = document.querySelectorAll('.page');
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      let currentPage = 1;
+      const totalPages = pages.length;
+      
+      // Inicialización
+      updateButtons();
+      
+      // Eventos para los botones de navegación
+      prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          flipPage('back');
+        }
+      });
+      
+      nextBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          flipPage('forward');
+        }
+      });
+      
+      // Función para pasar página
+      function flipPage(direction) {
+        if (direction === 'forward') {
+          document.getElementById(`page-${currentPage}`).classList.add('flipped');
+          currentPage++;
+          document.getElementById(`page-${currentPage}`).classList.add('active');
+          
+          // Si llegamos a la página de la medalla, mostrarla con animación
+          if (currentPage === 4) {
+            setTimeout(() => {
+              document.getElementById('medal').classList.add('show');
+            }, 1000);
+          }
+        } else {
+          document.getElementById(`page-${currentPage}`).classList.remove('active');
+          currentPage--;
+          document.getElementById(`page-${currentPage}`).classList.remove('flipped');
+        }
+        
+        updateButtons();
+      }
+      
+      // Actualizar estado de botones
+      function updateButtons() {
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
+      }
+      
+      // Funcionalidad de arrastrar y soltar
+      const items = document.querySelectorAll('.item');
+      const bins = document.querySelectorAll('.bin');
+      let draggedItem = null;
+      let completedItems = 0;
+      
+      items.forEach(item => {
+        item.addEventListener('dragstart', function() {
+          draggedItem = this;
+          setTimeout(() => this.style.opacity = '0.5', 0);
+        });
+        
+        item.addEventListener('dragend', function() {
+          this.style.opacity = '1';
+        });
+      });
+      
+      bins.forEach(bin => {
+        bin.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          this.style.background = 'rgba(0, 255, 0, 0.1)';
+        });
+        
+        bin.addEventListener('dragleave', function() {
+          this.style.background = 'transparent';
+        });
+        
+        bin.addEventListener('drop', function(e) {
+          e.preventDefault();
+          this.style.background = 'transparent';
+          
+          if (draggedItem) {
+            const itemType = draggedItem.getAttribute('data-type');
+            const binType = this.getAttribute('data-bintype');
+            const feedback = this.querySelector('.feedback');
+            
+            if (itemType === binType) {
+              // Correcto
+              feedback.classList.add('show', 'positive');
+              draggedItem.style.display = 'none';
+              completedItems++;
+              
+              // Verificar si se completó el juego
+              if (completedItems === items.length) {
+                setTimeout(() => {
+                  nextBtn.click();
+                }, 1500);
+              }
+            } else {
+              // Incorrecto
+              feedback.textContent = 'Intenta de nuevo 👀';
+              feedback.classList.add('show', 'negative');
+            }
+            
+            setTimeout(() => {
+              feedback.classList.remove('show');
+              setTimeout(() => {
+                feedback.classList.remove('positive', 'negative');
+                feedback.textContent = '¡Muy bien! 🌱';
+              }, 300);
+            }, 1500);
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
