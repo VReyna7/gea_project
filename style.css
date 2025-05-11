@@ -1,0 +1,134 @@
+/* Estilos Generales */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+    padding: 0 20px;
+}
+
+/* Encabezado */
+header {
+    background-color: #006400; /* Verde oscuro */
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    border-bottom: #004d00 3px solid;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
+
+header p {
+    font-size: 1.1em;
+}
+
+/* Navegación */
+nav {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+    position: sticky; /* Hace que la barra de nav se quede fija al hacer scroll */
+    top: 0;
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+}
+
+nav ul {
+    padding: 0;
+    list-style: none;
+    margin: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: #90EE90; /* Verde claro */
+}
+
+/* Secciones Principales */
+main {
+    padding: 20px;
+    max-width: 1000px; /* Limita el ancho del contenido principal */
+    margin: 20px auto; /* Centra el contenido principal */
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+section {
+    padding: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+section:last-child {
+    border-bottom: none;
+}
+
+section h2 {
+    color: #006400; /* Verde oscuro */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Estilos específicos para "Cómo Reciclar" */
+#como-reciclar .material {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
+
+#como-reciclar .material h3 {
+    margin-top: 0;
+    padding-bottom: 5px;
+    border-bottom: 2px solid;
+}
+
+.color-azul { color: #007bff; border-bottom-color: #007bff;}
+.color-blanco { color: #333; border-bottom-color: #ccc; } /* El blanco puro no se vería en fondo blanco, usamos gris claro */
+.color-naranja { color: #fd7e14; border-bottom-color: #fd7e14;}
+
+
+/* Pie de Página */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+    margin-top: 20px;
+}
+
+/* Para hacerla un poco responsiva en pantallas pequeñas */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2em;
+    }
+    nav ul li {
+        display: block; /* Los ítems de navegación se apilan */
+        margin: 10px 0;
+    }
+    .container {
+        width: 95%;
+    }
+}
